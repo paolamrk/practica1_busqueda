@@ -1,5 +1,13 @@
+import sys
+import os
 import pytest
 import osmnx as ox
+
+# 1. Inyección de ruta ANTES de las importaciones locales
+ruta_src = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src'))
+sys.path.append(ruta_src)
+
+# 2. Ahora sí, importaciones de tus módulos
 from fase1_algoritmos import busqueda_bfs, busqueda_ucs
 from fase3 import operador_2opt, calcular_costo_ruta, cruza_ox
 
@@ -28,4 +36,4 @@ def test_operadores_fase3():
 
 def test_funcion_costo():
     matriz_mock = [[0, 10, 20], [10, 0, 30], [20, 30, 0]]
-    assert calcular_costo_ruta([0, 1, 2], matriz_mock) == 60 # 10 + 30 + 20
+    assert calcular_costo_ruta([0, 1, 2], matriz_mock) == 60
