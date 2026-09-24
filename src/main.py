@@ -1,17 +1,26 @@
+import os
 import osmnx as ox
 import matplotlib.pyplot as plt
 import random
+
+# Importamos las funciones originales de la Fase 3 que utilizan UCS (Búsqueda a ciegas)
 from fase3 import generar_matriz_entregas, recocido_simulado, algoritmo_genetico
 
 print("Cargando grafo (esto tomará unos segundos)...")
-grafo = ox.load_graphml("../data/grafo_cdmx.graphml")
+
+# Construcción dinámica de la ruta absoluta para evitar el FileNotFoundError
+ruta_base = os.path.dirname(os.path.abspath(__file__))
+ruta_mapa = os.path.join(ruta_base, "..", "data", "grafo_cdmx.graphml")
+
+# Carga del grafo utilizando la ruta segura
+grafo = ox.load_graphml(ruta_mapa)
 nodos = list(grafo.nodes())
 
-# Seleccionar 12 puntos de entrega aleatorios para el TSP
+# Seleccionamos 12 puntos de entrega al azar
 puntos_entrega = random.sample(nodos, 12)
 indices_ruta = list(range(len(puntos_entrega)))
 
-print("Calculando matriz de distancias reales con UCS...")
+print("Calculando matriz de distancias reales con UCS (Búsqueda a Ciegas)...")
 matriz = generar_matriz_entregas(grafo, puntos_entrega)
 
 print("Ejecutando Recocido Simulado...")
@@ -29,11 +38,11 @@ mejor_ruta_ag, costo_ag, hist_ag = algoritmo_genetico(
 
 print(f"Costo final SA: {costo_sa:.2f} m | Costo final AG: {costo_ag:.2f} m")
 
-# Generación de gráficas requeridas por la rúbrica
+# Graficamos la convergencia
 plt.figure(figsize=(10, 6))
-plt.plot(hist_sa, label="Simulated Annealing (2-opt)", color="red")
-plt.plot(hist_ag, label="Algoritmo Genético (OX)", color="blue")
-plt.title("Curva de Convergencia: Optimización de Ruta de Entregas")
+plt.plot(hist_sa, label="Simulated Annealing (2-opt)", color="green")
+plt.plot(hist_ag, label="Algoritmo Genético (OX)", color="purple")
+plt.title("Convergencia de Optimización (Matriz generada con UCS)")
 plt.xlabel("Iteraciones / Generaciones")
 plt.ylabel("Mejor Costo Encontrado (metros)")
 plt.legend()
